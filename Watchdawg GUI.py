@@ -60,20 +60,6 @@ class watchdawg(Frame):
         watchdawg.save_dir_button = Button(self, text = "Choose Directory...", fg = "red", command = self.open_askdirectory)
         watchdawg.save_dir_button.grid(row = 5, column = 2, columnspan = 2, sticky = W+E)
 
-        # set up a checkbox button for "taking snapshots while recording"
-        # will implement later...hopefully
-        # wget is a Tkinter checkbox
-        # setup under the save dir and span the entire length to the right of the feed
-        watchdawg.snapshot_during_recording_checkbox = Checkbutton(self, text = "Take Snapshot During Recording", variable = snapshot_during_recording_var)
-        watchdawg.snapshot_during_recording_checkbox.grid(row = 6, column = 1, columnspan = 3, sticky = W)
-        
-        # set up a checkbox button for "sending alerts when recording starts"
-        # will implement later...hopefully
-        # wget is a Tkinter checkbox
-        # setup under the snapshot during recording checkbox to the right of the feed and through the entire length
-        watchdawg.alert_when_start_recording_checkbox = Checkbutton(self, text = "Send Alert When Recording", variable = alert_when_start_recording_var)
-        watchdawg.alert_when_start_recording_checkbox.grid(row = 7, column = 1, columnspan = 3, sticky = W)
-
         # set up status section
         # there will be a GPIO connection light, and a Camera Connection light
         # two wget types, two labels and two lights (in pics)
