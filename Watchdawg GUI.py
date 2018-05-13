@@ -25,6 +25,7 @@ class watchdawg(Frame):
         watchdawg.snapshot_label.grid(row = 0, column = 1, sticky = W)
         watchdawg.snapshot_button = Button(self, bg = "white", command = self.snapshot)
         watchdawg.snapshot_button.grid(row = 0, rowspan = 1, column = 2, columnspan = 2, sticky = N+S+E+W)
+        watchdawg.snapshotting = 0
 
         # setup another...button? The Record one, to the right of the snapshop button along with label
         # wget is a Tkinter button
@@ -137,25 +138,37 @@ class watchdawg(Frame):
     def record(self):
         try:
             if (watchdawg.directory != None and watchdawg.recording == 0):
-                watchdawg.img5 = PhotoImage(file = "red_light_alt.gif")
+                watchdawg.img5 = PhotoImage(file = "record_alt.gif")
                 watchdawg.record_button.config(image = watchdawg.img5, width = "32", height = "24")
                 watchdawg.recording = 1
-
+                watchdawg.snapshot_button.config(state = DISABLED)
+                
                 # handle pressing the button again
             elif (watchdawg.directory != None and watchdawg.recording == 1):
-                watchdawg.img5 = PhotoImage(file = "red_light.gif")
+                watchdawg.img5 = PhotoImage(file = "record.gif")
                 watchdawg.record_button.config(image = watchdawg.img5, width = "32", height = "24")
                 watchdawg.recording = 0
+                watchdawg.snapshot_button.config(state = NORMAL)
         except:
             messagebox.showerror("ERROR", "No Directory has been set! Use the 'Choose Directory...' button to choose a directory!")
 
     def snapshot(self):
         try:
-            if (watchdawg.directory != None):
-                pass
+            if (watchdawg.directory != None and watchdawg.snapshotting == 0):
+                watchdawg.img4 = PhotoImage(file = "camera_alt.gif")
+                watchdawg.snapshot_button.config(image = watchdawg.img4, width = "32", height = "24")
+                watchdawg.snapshotting = 1
+                watchdawg.record_button.config(state = DISABLED)
+
+                # handle pressing the button again
+            elif (watchdawg.directory != None and watchdawg.snapshotting == 1):
+                watchdawg.img4 = PhotoImage(file = "camera.gif")
+                watchdawg.snapshot_button.config(image = watchdawg.img4, width = "32", height = "24")
+                watchdawg.snapshotting = 0
+                watchdawg.record_button.config(state = NORMAL)
         except:
             messagebox.showerror("ERROR", "No Directory has been set! Use the 'Choose Directory...' button to choose a directory!")
-            
+
     def process_email(self, event):
         # take input
         email = watchdawg.email_input.get()
@@ -187,18 +200,22 @@ class watchdawg(Frame):
         # command for the Save Dir. button. Using this so the dialog doesn't pop up immediately when WDA opens
     def open_askdirectory(self):
         # max 21 characters in button
+        watchdawg.directory = "./"
         watchdawg.directory = filedialog.askdirectory()
         # check length
         if (len(watchdawg.directory) > 21):
+            watchdawg.button_directory = ""
             # take the string length and cuts it off and adds ... to the end, but still saves the directory.
             sub = len(watchdawg.directory) - 11
             final = watchdawg.directory[:-sub]
             final = "".join(final)
             final += "..."
             watchdawg.button_directory = final
-        watchdawg.save_dir_button.config(text = watchdawg.button_directory)
-        watchdawg.save_dir_button.pack_propagate(False)
-
+            # add a check to make sure there's actually a directory
+            watchdawg.save_dir_button.config(text = watchdawg.button_directory)
+            watchdawg.save_dir_button.pack_propagate(False)
+            print watchdawg.directory
+                
         # USE watchdawg.directory FOR EVERYTHING ELSE EXCEPT THE BUTTON
 
         # function to handle closing for the video feed button
@@ -230,7 +247,7 @@ class watchdawg(Frame):
         # part to select diff res
         video_feed.res_selector = ttk.Combobox(video_feed)
         video_feed.res_selector["values"] = ("1280x720", "1366x768", "1600x900", "1920x1080", "1920x1200", "2560x1440", "2560x1600", "2592x1944")
-        video_feed.res_selector.current(1)
+        video_feed.res_selector.current(0)
         video_feed.res_selector.grid(row = 0, column = 1, sticky = E+W)
 
         video_feed.res_selector_current = video_feed.res_selector.get()
