@@ -1,13 +1,14 @@
 ####
 # Figure out how to put settings in another window tab CHECK
 # Try to move shit around to make it look cooler CHECK (?)
-# GET BETTER BUTTON PICTURES
+# GET BETTER BUTTON PICTURES CHECK
 ####
 
 from Tkinter import *
 import ttk
 import tkFileDialog as filedialog
 import tkMessageBox as messagebox
+import ScrolledText as tkst
 
 class watchdawg(Frame):
     def __init__(self, master):
@@ -100,6 +101,12 @@ class watchdawg(Frame):
         # video feed button
         watchdawg.video_feed_button = Button(self, text = "Open Video Feed", command = self.create_feed_window)
         watchdawg.video_feed_button.grid(row = 11, column = 1, columnspan = 3, sticky = W+E)
+
+        # scrolled text box for the credits!
+        watchdawg.credits_box = tkst.ScrolledText(self, wrap = "word", width = 25, height = 10, bg = "grey")
+        watchdawg.credits_box.grid(row = 0, rowspan = 12, column = 4, sticky = N+S+E+W)
+        watchdawg.credits_box.insert(INSERT, "Credits:\n GUI: Morgan King\n Rest: TBD\n")
+        watchdawg.credits_box.config(state = DISABLED)
 
         # set the gpio pic
         # issue a check to see if the var is ticked to determine which status light to show
@@ -214,7 +221,6 @@ class watchdawg(Frame):
             # add a check to make sure there's actually a directory
             watchdawg.save_dir_button.config(text = watchdawg.button_directory)
             watchdawg.save_dir_button.pack_propagate(False)
-            print watchdawg.directory
                 
         # USE watchdawg.directory FOR EVERYTHING ELSE EXCEPT THE BUTTON
 
@@ -232,6 +238,9 @@ class watchdawg(Frame):
 
         # function that creates the video feed window when the button is pressed
         # works just like another window
+        # set the title and a placeholder pic
+        # tick a counter to change the state of the video feed button
+        # make it call a function when closed
     def create_feed_window(self):
         global video_feed
         video_feed = Toplevel(self)
@@ -243,20 +252,47 @@ class watchdawg(Frame):
         watchdawg.video_feed_button.config(state = DISABLED)
         video_feed.protocol("WM_DELETE_WINDOW", self.on_closing)
         
-        # figure out how to add a selection piece to select the different resolutions of the camera
-        # part to select diff res
-        video_feed.res_selector = ttk.Combobox(video_feed)
+        # figure out how to add a selection piece to select the different resolutions of the camera CHECK
+        # part to select diff res CHEKC
+        # use StringVar to check if the value of the resolution changes, then call a function
+        # sets a combobox to a list of resolutions, these resolutions will dicate the size of the window
+        # a label for the resolutions is there too
+        video_feed.current_res = StringVar()
+        video_feed.res_selector = ttk.Combobox(video_feed, textvar = video_feed.current_res, state = "readonly")
         video_feed.res_selector["values"] = ("1280x720", "1366x768", "1600x900", "1920x1080", "1920x1200", "2560x1440", "2560x1600", "2592x1944")
         video_feed.res_selector.current(0)
         video_feed.res_selector.grid(row = 0, column = 1, sticky = E+W)
-
         video_feed.res_selector_current = video_feed.res_selector.get()
-
         video_feed.res_label = Label(video_feed, text = "Resolutions:")
         video_feed.res_label.grid(row = 0, column = 0, sticky = W)
-
         video_feed.geometry("800x450")
+        video_feed.current_res.trace('w', self.change_video_feed_resolution)
 
+        # used to change the resolution of the video feed window
+    def change_video_feed_resolution(self, index, value, op):
+        video_feed.changing_res = video_feed.res_selector.get()
+        # split the resolution
+        video_feed.length_width = video_feed.changing_res.split("x")
+
+        # set the length and width (still strings) to a var, then convert to integers so the program can calc with them!
+        length_str = video_feed.length_width[0]
+        width_str = video_feed.length_width[1]
+        length_int = int(length_str)
+        width_int = int(width_str)
+
+        # now half the length and width so the menu isnt extremely huge, and set the geometry to that size
+        length_half = length_int / 2
+        width_half = width_int / 2
+
+        # convert back to string
+        length_half_str = str(length_half)
+        width_half_str = str(width_half)
+        
+        # slam the two strings back together
+        video_feed.changing_new_res = length_half_str + "x" + width_half_str
+
+        # finally set the geometry
+        video_feed.geometry(video_feed.changing_new_res)
         # work to just scale down the video feed
 
         # start the GUI
