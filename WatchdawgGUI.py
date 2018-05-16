@@ -10,6 +10,7 @@ import ttk
 import tkFileDialog as filedialog
 import tkMessageBox as messagebox
 import ScrolledText as tkst
+import time
 
 class watchdawg(Frame):
     def __init__(self, master):
@@ -161,31 +162,31 @@ class watchdawg(Frame):
         # I'm making it change color when pressed
         # should make it check to make sure a directory is chosen
     def record(self):
-        try:
-            if (watchdawg.directory != None and watchdawg.recording == 0):
-                watchdawg.img5 = PhotoImage(file = "record_alt.gif")
-                watchdawg.record_button.config(image = watchdawg.img5, width = "32", height = "24")
-                watchdawg.recording = 1
-                watchdawg.snapshot_button.config(state = DISABLED)
-                
-                # make it ask for length of video
-                if (watchdawg.video_length_set == 0):
-                    # in this case, lets make a child window to handle labels
-                    # calls for it through the function
-                    self.create_child_window(0)
-                else:
-                    # here is where the stuff gets passed to the controller program
-                    # put a holder here for now
-                    print "holder"                
-                
-                # handle pressing the button again
-            elif (watchdawg.directory != None and watchdawg.recording == 1):
-                watchdawg.img5 = PhotoImage(file = "record.gif")
-                watchdawg.record_button.config(image = watchdawg.img5, width = "32", height = "24")
-                watchdawg.recording = 0
-                watchdawg.snapshot_button.config(state = NORMAL)
-        except:
-            messagebox.showerror("ERROR", "No Directory has been set! Use the 'Choose Directory...' button to choose a directory!")
+##        try:
+        if (watchdawg.directory != None and watchdawg.recording == 0):
+            watchdawg.img5 = PhotoImage(file = "record_alt.gif")
+            watchdawg.record_button.config(image = watchdawg.img5, width = "32", height = "24")
+            watchdawg.recording = 1
+            watchdawg.snapshot_button.config(state = DISABLED)
+            
+            # make it ask for length of video
+            if (watchdawg.video_length_set == 0):
+                # in this case, lets make a child window to handle labels
+                # calls for it through the function
+                self.create_child_window(0)
+            else:
+                # here is where the stuff gets passed to the controller program
+                # put a holder here for now
+                print "holder"                
+            
+            # handle pressing the button again
+        elif (watchdawg.directory != None and watchdawg.recording == 1):
+            watchdawg.img5 = PhotoImage(file = "record.gif")
+            watchdawg.record_button.config(image = watchdawg.img5, width = "32", height = "24")
+            watchdawg.recording = 0
+            watchdawg.snapshot_button.config(state = NORMAL)
+##        except:
+##            messagebox.showerror("ERROR", "No Directory has been set! Use the 'Choose Directory...' button to choose a directory!")
 
     def snapshot(self):
         try:
@@ -236,7 +237,7 @@ class watchdawg(Frame):
         # check the ip address to make sure its real (ipv4)
         if ((len(ip) < 11) or ("." not in ip)):
             watchdawg.ip_address_input.delete(0, END)
-            response = messagebox.showerror("Invalid IP Adress", "That doesn't look like a valid IP address! Try again.")
+            response = messagebox.showerror("Invalid IP Address", "That doesn't look like a valid IP address! Try again.")
         else:
             # now save the address
             watchdawg.ip_address = ip
@@ -264,7 +265,10 @@ class watchdawg(Frame):
 
         # function to handle closing for the child window button
     def on_closing(self):
+        watchdawg.video_length = child_window.input_entry.get()
+        watchdawg.video_length = int(watchdawg.video_length)
         child_window.destroy()
+        
 ##
 ##        # function that creates the video feed window when the button is pressed
 ##        # works just like another window
@@ -344,15 +348,15 @@ class watchdawg(Frame):
             else:
                 child_window = Toplevel(self)
                 child_window.wm_title("Watchdawg Alpha Settings")
-                child_window.input_label = Label(child_window, text = "Please enter a video length and press enter:")
+                child_window.input_label = Label(child_window, text = "Please enter a video length:")
                 child_window.input_label.grid(row = 0, column = 0, sticky = N+S+E+W)
                 child_window.input_label2 = Label(child_window, text = "Close the window when done.")
                 child_window.input_label2.grid(row = 1, column = 0, sticky = N+S+E+W)
-                child_window.input_entry = Entry(child_window, bg = "white")
-                child_window.input_entry.bind("<Return>", self.process_child_window_entry(0))
+                child_window.input_entry = Spinbox(child_window, from_ = 1, to = 30, width = 5, state = "readonly")
                 child_window.input_entry.grid(row = 2, column = 0, sticky = N+S+E+W)
                 child_window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+                watchdawg.video_length_set = 1
 
         if (type == 1):
             # snapshotting
@@ -369,30 +373,32 @@ class watchdawg(Frame):
             else:
                 child_window = Toplevel(self)
                 child_window.wm_title("Watchdawg Alpha Settings")
-                child_window.input_label = Label(child_window, text = "Please enter a burst count and press enter:")
+                child_window.input_label = Label(child_window, text = "Please enter a burst count:")
                 child_window.input_label.grid(row = 0, column = 0, sticky = N+S+E+W)
                 child_window.input_label2 = Label(child_window, text = "Close the window when done.")
                 child_window.input_label2.grid(row = 1, column = 0, sticky = N+S+E+W)
-                child_window.input_entry = Entry(child_window, bg = "white")
-                child_window.input_entry.bind("<Return>", self.process_child_window_entry(1))
+                child_window.input_entry = Spinbox(child_window, from_ = 1, to = 10, width = 5, state = "readonly")
                 child_window.input_entry.grid(row = 2, column = 0, sticky = N+S+E+W)
                 child_window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-    def process_child_window_entry(self, type):
-        if (type == 0):
-            # recording
-            # take input
-            video_length = child_window.input_entry.get()
-            watchdawg.video_length = video_length
-            watchdawg.video_length_set = 1
-            
-        if (type == 1):
-            # snapshotting
-            # take input
-            snapshot_burst = child_window.input_entry.get()
-            self.snapshot_burst = snapshot_burst
-            watchdawg.snapshot_burst_set = 1
-        
+                watchdawg.snapshot_burst_set = 1
+
+    # check the status of the gpio.
+    # use this to change the pic of the status barz
+    # you can change the pic on the fly here, see waaaay above for the variables
+    def check_gpio_status(self):
+        window.after(1000, self.check_gpio_status)
+        print "ping!"
+        pass
+
+    # check the status of the camera.
+    # use this to change the pic of the status barz
+    # you can change the pic on the fly here, see waaaay above for the variables
+    def check_camera_status(self):
+        window.after(1000, self.check_camera_status)
+        print "pong!"
+        pass
+    
         # start the GUI
     def start(self):
         self.setupGUI()
@@ -420,5 +426,7 @@ window.title("Watchdawg Alpha")
 watchdawg = watchdawg(window)
 watchdawg.start()
 
+window.after(0, watchdawg.check_gpio_status)
+window.after(0, watchdawg.check_camera_status)
 window.mainloop()
 
