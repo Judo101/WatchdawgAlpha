@@ -264,9 +264,18 @@ class watchdawg(Frame):
         # USE watchdawg.directory FOR EVERYTHING ELSE EXCEPT THE BUTTON
 
         # function to handle closing for the child window button
-    def on_closing(self):
+    def on_closing_video(self):
+        # recording
         watchdawg.video_length = child_window.input_entry.get()
+        print watchdawg.video_length
         watchdawg.video_length = int(watchdawg.video_length)
+        child_window.destroy()
+
+    # function to handle closing for the child window button
+    def on_closing_snapshot(self):
+        watchdawg.snapshot_burst = child_window.input_entry.get()
+        print watchdawg.snapshot_burst
+        watchdawg.snapshot_burst = int(watchdawg.snapshot_burst)
         child_window.destroy()
         
 ##
@@ -346,6 +355,7 @@ class watchdawg(Frame):
 
             # if they want a different number
             else:
+                watchdawg.video_length_set = 1
                 child_window = Toplevel(self)
                 child_window.wm_title("Watchdawg Alpha Settings")
                 child_window.input_label = Label(child_window, text = "Please enter a video length:")
@@ -354,9 +364,7 @@ class watchdawg(Frame):
                 child_window.input_label2.grid(row = 1, column = 0, sticky = N+S+E+W)
                 child_window.input_entry = Spinbox(child_window, from_ = 1, to = 30, width = 5, state = "readonly")
                 child_window.input_entry.grid(row = 2, column = 0, sticky = N+S+E+W)
-                child_window.protocol("WM_DELETE_WINDOW", self.on_closing)
-
-                watchdawg.video_length_set = 1
+                child_window.protocol("WM_DELETE_WINDOW", self.on_closing_video)
 
         if (type == 1):
             # snapshotting
@@ -371,6 +379,7 @@ class watchdawg(Frame):
 
             # if they want a different number
             else:
+                watchdawg.snapshot_burst_set = 1
                 child_window = Toplevel(self)
                 child_window.wm_title("Watchdawg Alpha Settings")
                 child_window.input_label = Label(child_window, text = "Please enter a burst count:")
@@ -379,9 +388,7 @@ class watchdawg(Frame):
                 child_window.input_label2.grid(row = 1, column = 0, sticky = N+S+E+W)
                 child_window.input_entry = Spinbox(child_window, from_ = 1, to = 10, width = 5, state = "readonly")
                 child_window.input_entry.grid(row = 2, column = 0, sticky = N+S+E+W)
-                child_window.protocol("WM_DELETE_WINDOW", self.on_closing)
-
-                watchdawg.snapshot_burst_set = 1
+                child_window.protocol("WM_DELETE_WINDOW", self.on_closing_snapshot)
 
     # check the status of the gpio.
     # use this to change the pic of the status barz
@@ -428,5 +435,7 @@ watchdawg.start()
 
 window.after(0, watchdawg.check_gpio_status)
 window.after(0, watchdawg.check_camera_status)
+print watchdawg.video_length
+print watchdawg.snapshot_burst
 window.mainloop()
 
