@@ -162,31 +162,31 @@ class watchdawg(Frame):
         # I'm making it change color when pressed
         # should make it check to make sure a directory is chosen
     def record(self):
-##        try:
-        if (watchdawg.directory != None and watchdawg.recording == 0):
-            watchdawg.img5 = PhotoImage(file = "record_alt.gif")
-            watchdawg.record_button.config(image = watchdawg.img5, width = "32", height = "24")
-            watchdawg.recording = 1
-            watchdawg.snapshot_button.config(state = DISABLED)
-            
-            # make it ask for length of video
-            if (watchdawg.video_length_set == 0):
-                # in this case, lets make a child window to handle labels
-                # calls for it through the function
-                self.create_child_window(0)
-            else:
-                # here is where the stuff gets passed to the controller program
-                # put a holder here for now
-                print "holder"                
-            
-            # handle pressing the button again
-        elif (watchdawg.directory != None and watchdawg.recording == 1):
-            watchdawg.img5 = PhotoImage(file = "record.gif")
-            watchdawg.record_button.config(image = watchdawg.img5, width = "32", height = "24")
-            watchdawg.recording = 0
-            watchdawg.snapshot_button.config(state = NORMAL)
-##        except:
-##            messagebox.showerror("ERROR", "No Directory has been set! Use the 'Choose Directory...' button to choose a directory!")
+        try:
+            if (watchdawg.directory != None and watchdawg.recording == 0):
+                watchdawg.img5 = PhotoImage(file = "record_alt.gif")
+                watchdawg.record_button.config(image = watchdawg.img5, width = "32", height = "24")
+                watchdawg.recording = 1
+                watchdawg.snapshot_button.config(state = DISABLED)
+                
+                # make it ask for length of video
+                if (watchdawg.video_length_set == 0):
+                    # in this case, lets make a child window to handle labels
+                    # calls for it through the function
+                    self.create_child_window(0)
+                else:
+                    # here is where the stuff gets passed to the controller program
+                    # put a holder here for now
+                    print "holder"                
+                
+                # handle pressing the button again
+            elif (watchdawg.directory != None and watchdawg.recording == 1):
+                watchdawg.img5 = PhotoImage(file = "record.gif")
+                watchdawg.record_button.config(image = watchdawg.img5, width = "32", height = "24")
+                watchdawg.recording = 0
+                watchdawg.snapshot_button.config(state = NORMAL)
+        except:
+            messagebox.showerror("ERROR", "No Directory has been set! Use the 'Choose Directory...' button to choose a directory!")
 
     def snapshot(self):
         try:
